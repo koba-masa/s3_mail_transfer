@@ -1,0 +1,2 @@
+# transfer_s3_mail
+AWS SESにてS3に格納されたメールをLambdaで転送する
