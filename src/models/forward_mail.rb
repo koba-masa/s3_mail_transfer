@@ -36,35 +36,12 @@ class ForwardMail
       .gsub(/^Return-Path: .+?\r\n/, "Return-Path: #{Environment.transfer_from}\r\n") \
       .gsub(/\r\nFrom: .+?\r\n/, "\r\nFrom: #{Environment.transfer_from}\r\n")
     processed_message = processed_message.concat(
-      "\r\n== ここまでが原文 ========\r\n本メールは転送されています。\r\n送信元メールアドレス: #{event.source}\r\n送信先メールアドレス: #{event.destination}\r\n"
-    )
-  end
-
-  def read_message
-    response = s3_client.get_object(
-        bucket: Environment.bucket_name,
-        key: message_key,
-    )
-    response.body.read()
-  end
-
-  def delete_message
-    response = s3_client.delete_object(
-        bucket: Environment.bucket_name,
-        key: message_key,
+      "\r\n== This is the original text. ========\r\nThis mail was transfered.\r\nOriginal From MailAddress: #{event.source}\r\nOriginal To MailAddress: #{event.destination}\r\n"
     )
   end
 
   def ses_client
     @ses_client ||= Aws::SES::Client.new
-  end
-
-  def s3_client
-    @s3_client ||= Aws::S3::Client.new(region: Environment.s3_region)
-  end
-
-  def message_key
-    @message_key ||= "#{Environment.object_prefix}/#{event.message_id}"
   end
 
   def event
