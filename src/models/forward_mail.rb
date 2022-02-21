@@ -3,8 +3,8 @@ require 'logger'
 require 'aws-sdk-s3'
 require 'aws-sdk-ses'
 
-require './models/environment'
-require './models/event'
+require './src/models/environment'
+require './src/models/event'
 
 class ForwardMail
 
