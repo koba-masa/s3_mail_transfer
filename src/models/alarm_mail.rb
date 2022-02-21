@@ -1,7 +1,7 @@
 require 'aws-sdk-ses'
 
-require './models/environment'
-require './models/event'
+require './src/models/environment'
+require './src/models/event'
 
 class AlarmMail
   def initialize(event, error)
