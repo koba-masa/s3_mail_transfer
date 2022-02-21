@@ -22,7 +22,7 @@ def lambda_handler(event:, context:)
 
   # 想定しているのはtext/plainなメールそれ以外の場合は、念の為、アラームメールを送信し、メッセージ削除を行わない
   if custom_event.content_type_mailtype == "text/plain"
-    original_mail.delete
+    s3_mail.delete
   else
     error_message = "This mail is not text/plain.: #{custom_event.content_type_mailtype}"
     logger.warn(error_message)
@@ -50,16 +50,15 @@ def edit_raw_mail(original_mail)
     .gsub(/\r\nReturn-Path: .+?\r\n/, "Return-Path: #{Environment.transfer_from}\r\n") \
     .gsub(/^From: .+?\r\n/, "From: #{Environment.transfer_from}\r\n") \
     .gsub(/\r\nFrom: .+?\r\n/, "\r\nFrom: #{Environment.transfer_from}\r\n")
-  
 
-  add_message = "\r\n== This is the original text. ========\r\nThis mail was transfered.\r\nOriginal From MailAddress: #{custom_event.source}\r\nOriginal To MailAddress: #{custom_event.destination}\r\n" \
-    .encode(custom_event.content_type_encoding)
+  add_message = "\r\n== This is the original text. ========\r\nThis mail was transfered.\r\nOriginal From MailAddress: #{custom_event.source}\r\nOriginal To MailAddress: #{custom_event.destination}\r\n"
 
   edited_raw_mail.concat(add_message)
 end
 
 def send_mail(raw_mail)
   logger.debug("メッセージ内容:#{raw_mail}")
+  # 日本語で送信された場合はエラーとなり、運用対象とする
   ses_client.send_raw_email(
     {
       destinations: Environment.forward_to,

@@ -19,20 +19,20 @@ class Event
 
   def content_transfer_encoding
     @content_transfer_encoding ||= \
-      headers.select { | header | header["name"] == "Content-Transfer-Encoding" }[0]
+      headers.select { | header | header["name"] == "Content-Transfer-Encoding" }[0]["value"]
   end
 
   def content_type_mailtype
-    @content_type_mailtype ||= content_type.split(";")[0].strip
+    @content_type_mailtype ||= /^(.*);.*/.match(content_type)[1]
   end
 
   def content_type_encoding
-    @content_type_encoding ||= content_type.split(";")[1].strip
+    @content_type_encoding ||= /.*charset=(.*)$/.match(content_type)[1]
   end
 
   def content_type
-    @content_transfer_encoding ||= \
-      headers.select { | header | header["name"] == "Content-Typ" }[0]
+    @content_type ||= \
+      headers.select { | header | header["name"] == "Content-Type" }[0]["value"]
   end
 
   def headers
